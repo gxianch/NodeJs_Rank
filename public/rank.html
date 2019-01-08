@@ -1,0 +1,268 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>影视排行榜</title>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<!--把下面代码加到<head>与</head>之间-->
+<script type="text/javascript" src="/jquery-1.8.3.min.js"></script>
+
+<link href="/stylesheets/foundation-datepicker.css" rel="stylesheet" type="text/css">
+<script src="/javascripts/foundation-datepicker.js"></script>
+<script src="/javascripts/locales/foundation-datepicker.zh-CN.js"></script>
+
+<style type="text/css">
+<!--
+*{font-family:simsun;margin:0px;padding:0px;}
+body{font-size:12px;text-align:center;}
+ul,li{list-style:none;}
+a{text-decoration:none;color:#3381BF;}
+a:hover{text-decoration:underline;}
+/* #movie_rank{height:260px;} */
+.box2{border:1px solid #ADDFF2;text-align:left;overflow:hidden;color:#9C9C9C;text-align:left;}
+.box2{margin-bottom:7px;}
+.box2 h2{background:#EEF7FE;height:21px;line-height:21px;overflow-y:hidden;border-bottom:1px solid #ADDFF2;color:#1974C8;font-size:12px;padding:0px 8px;}
+.box2 h2 a.more{float:right;text-decoration:underline;background:url() no-repeat 100% -123px;padding-right:8px;font-weight:normal;}
+.box2 h2 span{margin-left:5px;font-weight:normal;color:#B9B7B8;}
+.box2 .inner{padding:8px;line-height:18px;overflow:hidden;color:#3083C7;width:30%;float:left}
+.box2 a{color:#3083C7;white-space:nowrap;}
+.rank_list{line-height:14px;margin:auto;padding-top:5px;}
+.rank_list li{height:14px;margin-bottom:8px;width:290px;padding-left:20px;white-space:nowrap;overflow:hidden;position:relative;}
+.rank_list li.top3 em{background:#FFE4B7;border:1px solid #FFBB8B;color:#FF6800;}
+.rank_list em{position:absolute;left:0;top:0;width:12px;height:12px;border:1px solid #B1E0F4;color:#6298CC;font-style:normal;font-size:10px;font-family:Arial;background:#E6F0FD;text-align:center;line-height:12px;overflow:hidden;}
+.rank_list span{position:absolute;width:60px;color:#B7B7B7;text-align:right;height:14px;background:#fff;left:110px;}
+#movie_rank .rank_list span{position:absolute;width:40px;color:#B7B7B7;text-align:right;height:14px;background:#fff;left:260px;}
+-->
+
+/* 弹出框样式 */
+* {
+ margin:0;
+ padding:0
+}
+.white_content {
+ display: none;
+ position: absolute;
+ top: 25%;
+ left: 25%;
+ width: 50%;
+ padding: 50px 16px;
+ border: 12px solid #D6E9F1;
+ background-color: white;
+ z-index:1002;
+ overflow: auto;
+}
+
+.close {
+ float:right;
+ clear:both;
+ width:100%;
+ text-align:right;
+ margin:0 0 6px 0
+}
+
+.con {
+ text-indent:1.5pc;
+ line-height:21px
+}
+
+</style>
+</head>
+<body>
+<!--把下面代码加到<body>与</body>之间-->
+<div class="box2" id="movie_rank">
+ <h2><!-- <a href="javascript:flush()" class="more" > 刷新</a> -->
+	<!--<a href="javascript:void(0)" onclick="show('light')" class="more">导出影视排行</a>-->
+	影视排行</h2>
+  <div class="inner">
+	 <h2>今日电视剧排行榜</h2>
+    <ul class="rank_list" id="rank_list_day_tele">
+    </ul>
+     <h2>今日电影排行榜</h2>
+    <ul class="rank_list" id="rank_list_day_movie">
+      </ul>
+           <h2>今日动漫排行榜</h2>
+    <ul class="rank_list" id="rank_list_day_cartoon">
+      </ul>
+                 <h2>今日综艺排行榜</h2>
+    <ul class="rank_list" id="rank_list_day_variety">
+      </ul>
+      </div>
+       <div class="inner">
+    <h2>昨日电视剧排行榜</h2>
+    <ul class="rank_list" id="rank_list_yesterday_tele">
+  </ul>
+  <h2>昨日电影排行榜</h2>
+    <ul class="rank_list" id="rank_list_yesterday_movie">
+  </ul>
+  <h2>昨日动漫排行榜</h2>
+    <ul class="rank_list" id="rank_list_yesterday_cartoon">
+  </ul>
+    <h2>昨日综艺排行榜</h2>
+    <ul class="rank_list" id="rank_list_yesterday_variety">
+  </ul>
+     </div>
+       <div class="inner">
+     <h2>本周电视剧排行榜</h2>
+    <ul class="rank_list" id="rank_list_week_tele">
+  </ul>
+       <h2>本周电影排行榜</h2>
+    <ul class="rank_list" id="rank_list_week_movie">
+  </ul>
+       <h2>本周动漫排行榜</h2>
+    <ul class="rank_list" id="rank_list_week_cartoon">
+  </ul>
+         <h2>本周综艺排行榜</h2>
+    <ul class="rank_list" id="rank_list_week_variety">
+  </ul>
+  </div>
+
+  <!-- 导出功能 -->
+  <div id="light"  class="white_content" title="基本的对话框">
+  <div class="close">
+  	<a href="javascript:void(0)" onclick="hide('light')"> 关闭</a>
+  	<a href="javascript:void(0)" onclick="importAll()">  导出数据   </a>
+  	<a href="javascript:void(0)" onclick="delet()"> 清除</a>
+  </div>
+      <div class="con">
+      <table>
+      	<tr>
+            <td>
+               <select id="One" ><!-- 2 电视剧 3电影 4纪实 5音乐 6.综艺 7动漫 -->
+               		  <option value="0">请选择栏目</option>
+               		  <option value="1">全部</option>
+                      <option value="2">电视剧</option>
+                      <option value="3">电影</option>
+                      <option value="4">纪实</option>
+                      <option value="5">音乐</option>
+                      <option value="6">综艺</option>
+                      <option value="7">动漫 </option>
+               		</select>
+          	 	</td>
+          	 </tr>
+          	 <tr>
+          	 	<td>
+          	 	开始时间:
+          	 	</td>
+          	 	<td>
+          	 	<input type="text" class="span2" value="" id="dpd1">
+          	 	</td>
+          	 	<td>
+          	 	结束时间:
+          	 	</td>
+          	 	<td>
+          	 	<input type="text" class="span2" value="" id="dpd2">
+          	 	</td>
+          	  </tr>
+          	  <tr>
+          	 	<td>
+          	 	<textarea  id="msgText"  style="width:350px" rows="4" data-options="validType:'length[1,1000]'" ></textarea>
+          	 	</td>
+          	  </tr>
+
+	 </table>
+      </div>
+
+  </div>
+
+</div>
+</body>
+<script>
+
+
+function show(tag){
+ var light=document.getElementById(tag);
+ light.style.display='block';
+ }
+function hide(tag){
+ var light=document.getElementById(tag);
+ light.style.display='none';
+}
+
+ function importAll(){
+
+	 var columnId=$("#One").val();
+	 var startTime=$("#dpd1").val();
+	 var endTime=$("#dpd2").val();
+	 //开始时间
+	 var startYear=startTime.substring(6, 10);
+	 var startMonth=startTime.substring(0,2);
+	 var startDay=startTime.substring(3,5);
+	 //拼接
+	 var a=startYear+"-"+startMonth+"-"+startDay;
+	 a = a.replace(/-/g,"/");//替换字符，变成标准格式
+	 //转换data类型进行比较
+	 var startData = new Date(Date.parse(a));
+	 //结束时间
+	 var endYear=endTime.substring(6, 10);
+	 var endMonth=endTime.substring(0,2);
+	 var endDay=endTime.substring(3,5);
+	 //拼接
+	 var b=endYear+"-"+endMonth+"-"+endDay;
+	 b = b.replace(/-/g,"/");//替换字符，变成标准格式
+	 //转换data类型进行比较
+	 var endData = new Date(Date.parse(b));
+	 //当前时间
+	 var now = new Date();
+
+	 if(endData>now){
+		 $("#msgText").val("结束时间超过现在时间");
+		 return ;
+	 }
+	 if(startData>now){
+		 $("#msgText").val("开始时间超过现在时间");
+		 return ;
+	 }
+	 if(startData>endData){
+		 $("#msgText").val("开始时间超过结束时间");
+		 return ;
+	 }
+
+	 window.open("/api/play/webflux/importAll?columnId="+columnId+"&startTime="+startTime+"&endTime="+endTime);
+
+	 $("#light").hide();
+}
+
+function delet(){
+	alert('清除');
+	$("#dpd1").val('');
+	$("#dpd2").val('');
+	$("#One").val('');
+
+}
+
+
+function ajaxrequest(day,movie){
+	  $("#rank_list_"+day+"_"+movie+" li").remove();
+	$.get("/rank/"+day+"/"+movie,function(result){
+		var len = result.length
+ 		for(var i=0;i<len;i++){
+			var j=i+1;
+			if(j<=3){
+				$("#rank_list_"+day+"_"+movie).append( '<li class="top3"><em>'+j+'</em><a title="" target="_blank" >'+result[i].value+'</a><span style="color:brown">'+result[i].score+'次'+'</span></li>');
+			}else{
+				$("#rank_list_"+day+"_"+movie).append( '<li><em>'+j+'</em><a title="" target="_blank" >'+result[i].value+'</a><span style="color:brown">'+result[i].score+'次'+'</span></li>');
+			}
+		}
+	},"json")
+}
+
+$(function(){
+/* 	ajaxrequestall(); */
+	ajaxrequest("day","movie");
+	ajaxrequest("day","cartoon");
+	ajaxrequest("day","tele");
+	ajaxrequest("day","variety");
+	ajaxrequest("yesterday","movie");
+	ajaxrequest("yesterday","cartoon");
+	ajaxrequest("yesterday","tele");
+	ajaxrequest("yesterday","variety");
+	ajaxrequest("week","movie");
+	ajaxrequest("week","cartoon");
+	ajaxrequest("week","tele");
+	ajaxrequest("week","variety");
+//	$('#dpd1').fdatepicker();
+//	$('#dpd2').fdatepicker();
+});
+
+
+</script>
+</html>
